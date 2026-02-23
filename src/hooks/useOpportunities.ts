@@ -19,7 +19,7 @@ export interface Opportunity {
   start_amount: number | null;
 }
 
-const API_URL = "http://localhost:3000/opportunities";
+const API_URL = "http://localhost:3000/api/v1/opportunities";
 
 export function useOpportunities() {
   return useQuery({
@@ -27,7 +27,8 @@ export function useOpportunities() {
     queryFn: async (): Promise<Opportunity[]> => {
       const res = await fetch(API_URL);
       if (!res.ok) throw new Error(`API error: ${res.status}`);
-      return res.json();
+      const json = await res.json();
+      return json.data ?? [];
     },
     refetchInterval: 10000,
   });
