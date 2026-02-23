@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export interface Opportunity {
   id: number;
@@ -20,18 +19,15 @@ export interface Opportunity {
   start_amount: number | null;
 }
 
+const API_URL = "http://localhost:3000/opportunities";
+
 export function useOpportunities() {
   return useQuery({
     queryKey: ["opportunities"],
     queryFn: async (): Promise<Opportunity[]> => {
-      const { data, error } = await supabase
-        .from("oportunities_three_levels_third_strategy")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
-
-      if (error) throw error;
-      return (data as Opportunity[]) ?? [];
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      return res.json();
     },
     refetchInterval: 10000,
   });
